@@ -44,16 +44,3 @@ exports.logout = (req, res) => {
     req.logout();
     res.redirect('/');
 };
-
-/**
- * Render account.ejs but ensure the user is logged in before rendering
- * @param   {Object}   req - The request
- * @param   {Object}   res - The response
- * @returns {undefined}
- */
-exports.account = [
-    login.ensureLoggedIn(),
-    (req, res) => {
-        res.render('account', { user: req.user });
-    },
-];

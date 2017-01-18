@@ -1,7 +1,6 @@
 'use strict';
 
 const bodyParser     = require('body-parser');
-const client         = require('./client');
 const cookieParser   = require('cookie-parser');
 const config         = require('./config');
 const db             = require('./db');
@@ -46,14 +45,12 @@ app.get('/',        site.index);
 app.get('/login',   site.loginForm);
 app.post('/login',  site.login);
 app.get('/logout',  site.logout);
-app.get('/account', site.account);
 
 app.get('/dialog/authorize',           oauth2.authorization);
 app.post('/dialog/authorize/decision', oauth2.decision);
 app.post('/oauth/token',               oauth2.token);
 
 app.get('/api/userinfo',   user.info);
-app.get('/api/clientinfo', client.info);
 
 // Mimicking google's token info endpoint from
 // https://developers.google.com/accounts/docs/OAuth2UserAgent#validatetoken
