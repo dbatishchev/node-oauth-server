@@ -1,12 +1,12 @@
-'use strict';
-
-const db                                   = require('./db');
-const passport                             = require('passport');
-const { Strategy: LocalStrategy }          = require('passport-local');
-const { BasicStrategy }                    = require('passport-http');
-const { Strategy: ClientPasswordStrategy } = require('passport-oauth2-client-password');
-const { Strategy: BearerStrategy }         = require('passport-http-bearer');
-const validate                             = require('./validate');
+const passport = require('passport');
+const {Strategy: LocalStrategy}          = require('passport-local');
+const {BasicStrategy}                    = require('passport-http');
+const {Strategy: ClientPasswordStrategy} = require('passport-oauth2-client-password');
+const {Strategy: BearerStrategy}         = require('passport-http-bearer');
+const validate = require('./validate');
+const User = require('./models/users');
+const Client = require('./models/clients');
+const AccessToken = require('./models/accesstokens');
 
 /**
  * LocalStrategy
@@ -16,7 +16,8 @@ const validate                             = require('./validate');
  * a user is logged in before asking them to approve the request.
  */
 passport.use(new LocalStrategy((username, password, done) => {
-    db.users.findByUsername(username)
+    // todo
+    User.findByUsername(username)
         .then(user => validate.user(user, password))
         .then(user => done(null, user))
         .catch(() => done(null, false));
@@ -34,7 +35,8 @@ passport.use(new LocalStrategy((username, password, done) => {
  * the specification, in practice it is quite common.
  */
 passport.use(new BasicStrategy((clientId, clientSecret, done) => {
-    db.clients.findByClientId(clientId)
+    // todo
+    Client.findById(clientId)
         .then(client => validate.client(client, clientSecret))
         .then(client => done(null, client))
         .catch(() => done(null, false));
@@ -48,7 +50,8 @@ passport.use(new BasicStrategy((clientId, clientSecret, done) => {
  * which accepts those credentials and calls done providing a client.
  */
 passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
-    db.clients.findByClientId(clientId)
+    // todo
+    Client.findById(clientId)
         .then(client => validate.client(client, clientSecret))
         .then(client => done(null, client))
         .catch(() => done(null, false));
@@ -66,9 +69,10 @@ passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
  * illustrative purposes
  */
 passport.use(new BearerStrategy((accessToken, done) => {
-    db.accessTokens.find(accessToken)
+    // todo
+    AccessToken.findById(accessToken)
         .then(token => validate.token(token, accessToken))
-        .then(token => done(null, token, { scope: '*' }))
+        .then(token => done(null, token, {scope: '*'}))
         .catch(() => done(null, false));
 }));
 

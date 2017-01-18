@@ -16,6 +16,7 @@
     "express": "^4.10.x",
     "express-session": "^1.9.x",
     "jsonwebtoken": "^7.2.1",
+    "mongoose": "^4.7.7",
     "oauth2orize": "^1.0.x",
     "passport": "^0.3.x",
     "passport-http": "^0.3.x",
