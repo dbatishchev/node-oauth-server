@@ -5,11 +5,7 @@ const path = require('path');
 const uuid = require('uuid/v4');
 const jwt  = require('jsonwebtoken');
 
-/** Private certificate used for signing JSON WebTokens */
-const privateKey = fs.readFileSync(path.join(__dirname, 'certs/privatekey.pem'));
-
-/** Public certificate used for verification.  Note: you could also use the private key */
-const publicKey = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'));
+const KEY = 'secretkey';
 
 /**
  * Creates a signed JSON WebToken and returns it.  Utilizes the private certificate to create
@@ -22,15 +18,13 @@ const publicKey = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'))
  * @return {String} The JWT Token
  */
 exports.createToken = ({ exp = 3600, sub = '' } = {}) => {
-    const token = jwt.sign({
+    return jwt.sign({
         jti : uuid(),
         sub,
         exp : Math.floor(Date.now() / 1000) + exp,
-    }, privateKey, {
+    }, KEY, {
         algorithm: 'RS256',
     });
-
-    return token;
 };
 
 /**
@@ -39,4 +33,4 @@ exports.createToken = ({ exp = 3600, sub = '' } = {}) => {
  * @throws  {Error} Error if the token could not be verified
  * @returns {Object} The token decoded and verified
  */
-exports.verifyToken = token => jwt.verify(token, publicKey);
+exports.verifyToken = token => jwt.verify(token, KEY);
