@@ -19,12 +19,9 @@ const KEY = 'secretkey';
  */
 exports.createToken = ({ exp = 3600, sub = '' } = {}) => {
     return jwt.sign({
-        jti : uuid(),
         sub,
         exp : Math.floor(Date.now() / 1000) + exp,
-    }, KEY, {
-        algorithm: 'RS256',
-    });
+    }, KEY);
 };
 
 /**
