@@ -15,6 +15,7 @@
     "es6-promisify": "^5.0.x",
     "express": "^4.10.x",
     "express-session": "^1.9.x",
+    "faker": "^3.1.0",
     "jsonwebtoken": "^7.2.1",
     "oauth2orize": "^1.0.x",
     "passport": "^0.3.x",
