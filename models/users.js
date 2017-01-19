@@ -25,6 +25,10 @@ User.methods.encryptPassword = function (password) {
     return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
 };
 
+User.methods.checkPassword = function (password) {
+    return this.encryptPassword(password) === this.hashedPassword;
+};
+
 User.virtual('userId')
     .get(function () {
         return this.id;
@@ -40,11 +44,8 @@ User.virtual('password')
         return this._plainPassword;
     });
 
-User.methods.checkPassword = function (password) {
-    return this.encryptPassword(password) === this.hashedPassword;
-};
-
-User.statics.findByUsername = function findByUsername(name, cb) {
+User.statics.findByUsername = function findByUsername(username, cb) {
+    return this.findOne({ username: username });
     // todo
 };
 

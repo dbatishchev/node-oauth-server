@@ -20,7 +20,7 @@ passport.use(new LocalStrategy((username, password, done) => {
     User.findByUsername(username)
         .then(user => validate.user(user, password))
         .then(user => done(null, user))
-        .catch(() => done(null, false));
+        .catch((e) => done(null, false));
 }));
 
 /**
@@ -90,11 +90,11 @@ passport.use(new BearerStrategy((accessToken, done) => {
 // the client by ID from the database.
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.username);
 });
 
 passport.deserializeUser((id, done) => {
-    db.users.find(id)
+    User.findByUsername(id)
         .then(user => done(null, user))
         .catch(err => done(err));
 });

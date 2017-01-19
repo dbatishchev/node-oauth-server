@@ -9,6 +9,7 @@ const expressSession = require('express-session');
 const fs = require('fs');
 const oauth2 = require('./oauth2');
 const passport = require('passport');
+const errorhandler = require('errorhandler');
 const path = require('path');
 const site = require('./site');
 const token = require('./token');
@@ -40,6 +41,10 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+if (app.get('env') === 'development') {
+    app.use(errorhandler());
+}
+
 // Passport configuration
 require('./auth');
 
@@ -65,23 +70,23 @@ app.get('/api/revoke', token.revoke);
 // static resources for stylesheets, images, javascript files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Catch all for error messages.  Instead of a stack
-// trace, this will log the json of the error message
-// to the browser and pass along the status with it
-app.use((err, req, res, next) => {
-    if (err) {
-        if (err.status == null) {
-            console.error('Internal unexpected error from:', err.stack);
-            res.status(500);
-            res.json(err);
-        } else {
-            res.status(err.status);
-            res.json(err);
-        }
-    } else {
-        next();
-    }
-});
+// // Catch all for error messages.  Instead of a stack
+// // trace, this will log the json of the error message
+// // to the browser and pass along the status with it
+// app.use((err, req, res, next) => {
+//     if (err) {
+//         if (err.status == null) {
+//             console.error('Internal unexpected error from:', err.stack);
+//             res.status(500);
+//             res.json(err);
+//         } else {
+//             res.status(err.status);
+//             res.json(err);
+//         }
+//     } else {
+//         next();
+//     }
+// });
 
 // todo
 // // From time to time we need to clean up any expired tokens
