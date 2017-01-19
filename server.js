@@ -3,9 +3,8 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config');
-const models = require('./models');
 const express = require('express');
-const expressSession = require('express-session');
+const session = require('express-session');
 const fs = require('fs');
 const oauth2 = require('./oauth2');
 const passport = require('passport');
@@ -14,12 +13,8 @@ const path = require('path');
 const site = require('./site');
 const token = require('./token');
 const user = require('./user');
-
 const db = require('./db/mongoose');
-
-console.log('Using MemoryStore for the data store');
-console.log('Using MemoryStore for the Session');
-const MemoryStore = expressSession.MemoryStore;
+const AccessToken = require('./models/accesstokens');
 
 // Express configuration
 const app = express();
@@ -27,11 +22,10 @@ app.set('view engine', 'ejs');
 app.use(cookieParser());
 
 // Session Configuration
-app.use(expressSession({
+app.use(session({
     saveUninitialized: true,
     resave: true,
     secret: config.session.secret,
-    store: new MemoryStore(),
     key: 'authorization.sid',
     cookie: {maxAge: config.session.maxAge},
 }));
@@ -70,31 +64,11 @@ app.get('/api/revoke', token.revoke);
 // static resources for stylesheets, images, javascript files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// // Catch all for error messages.  Instead of a stack
-// // trace, this will log the json of the error message
-// // to the browser and pass along the status with it
-// app.use((err, req, res, next) => {
-//     if (err) {
-//         if (err.status == null) {
-//             console.error('Internal unexpected error from:', err.stack);
-//             res.status(500);
-//             res.json(err);
-//         } else {
-//             res.status(err.status);
-//             res.json(err);
-//         }
-//     } else {
-//         next();
-//     }
-// });
-
-// todo
-// // From time to time we need to clean up any expired tokens
-// // in the database
-// setInterval(() => {
-//     db.accessTokens.removeExpired()
-//         .catch(err => console.error('Error trying to remove expired tokens:', err.stack));
-// }, config.db.timeToCheckExpiredTokens * 1000);
+// clean up expired tokens
+setInterval(() => {
+    AccessToken.removeExpired()
+        .catch(err => console.error('Error trying to remove expired tokens:', err.stack));
+}, config.db.timeToCheckExpiredTokens * 1000);
 
 app.listen(3000, '0.0.0.0', (err) => {
     if (err) {

@@ -48,4 +48,4 @@ User.statics.findByUsername = function findByUsername(username, cb) {
     return this.findOne({ username: username });
 };
 
-module.exports = mongoose.model('User', User);
+export default mongoose.model('User', User);

@@ -24,4 +24,8 @@ const AccessToken = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('AccessToken', AccessToken);
+AccessToken.statics.removeExpired = function removeExpired() {
+    // todo
+};
+
+export default mongoose.model('AccessToken', AccessToken);

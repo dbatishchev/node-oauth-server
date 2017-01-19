@@ -7,4 +7,4 @@ const AuthorizationCode = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('AuthorizationCode', AuthorizationCode);
+export default mongoose.model('AuthorizationCode', AuthorizationCode);
