@@ -1,30 +1,10 @@
-'use strict';
-
-const config  = require('./config');
-const utils   = require('./utils');
-const process = require('process');
-
-const User = require('./models/users');
-const Client = require('./models/clients');
+import config from './config';
+import utils from './utils';
+import User from './models/users';
+import Client from './models/clients';
 
 /** Validate object to attach all functions to  */
 const validate = Object.create(null);
-
-/** Suppress tracing for things like unit testing */
-const suppressTrace = process.env.OAUTHRECIPES_SURPRESS_TRACE === 'true';
-
-/**
- * Log the message and throw it as an Error
- * @param   {String} msg - Message to log and throw
- * @throws  {Error}  The given message as an error
- * @returns {undefined}
- */
-validate.logAndThrow = (msg) => {
-    if (!suppressTrace) {
-        console.trace(msg);
-    }
-    throw new Error(msg);
-};
 
 /**
  * Given a user and a password this will return the user if it exists and the password matches,
@@ -38,7 +18,7 @@ validate.user = (user, password) => {
     validate.userExists(user);
 
     if (!user.checkPassword(password)) {
-        validate.logAndThrow('User password does not match');
+        throw new Error('User password does not match');
     }
 
     return user;
@@ -52,7 +32,7 @@ validate.user = (user, password) => {
  */
 validate.userExists = (user) => {
     if (user == null) {
-        validate.logAndThrow('User does not exist');
+        throw new Error('User does not exist');
     }
     return user;
 };
@@ -68,7 +48,7 @@ validate.userExists = (user) => {
 validate.client = (client, clientSecret) => {
     validate.clientExists(client);
     if (client.clientSecret !== clientSecret) {
-        validate.logAndThrow('Client secret does not match');
+        throw new Error('Client secret does not match');
     }
     return client;
 };
@@ -81,7 +61,7 @@ validate.client = (client, clientSecret) => {
  */
 validate.clientExists = (client) => {
     if (client == null) {
-        validate.logAndThrow('Client does not exist');
+        throw new Error('Client does not exist');
     }
     return client;
 };
@@ -122,7 +102,7 @@ validate.token = (token, accessToken) => {
 validate.refreshToken = (token, refreshToken, client) => {
     utils.verifyToken(refreshToken);
     if (client.id !== token.clientID) {
-        validate.logAndThrow('RefreshToken clientID does not match client id given');
+        throw new Error('RefreshToken clientID does not match client id given');
     }
     return refreshToken;
 };
@@ -142,10 +122,10 @@ validate.refreshToken = (token, refreshToken, client) => {
 validate.authCode = (code, authCode, client, redirectURI) => {
     utils.verifyToken(code);
     if (client.id !== authCode.clientID) {
-        validate.logAndThrow('AuthCode clientID does not match client id given');
+        throw new Error('AuthCode clientID does not match client id given');
     }
     if (redirectURI !== authCode.redirectURI) {
-        validate.logAndThrow('AuthCode redirectURI does not match redirectURI given');
+        throw new Error('AuthCode redirectURI does not match redirectURI given');
     }
     return authCode;
 };

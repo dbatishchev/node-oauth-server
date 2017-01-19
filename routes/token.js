@@ -1,4 +1,4 @@
-const validate = require('./validate');
+const validate = require('./../validate');
 
 /**
  * This endpoint is for verifying a token.  This has the same signature to

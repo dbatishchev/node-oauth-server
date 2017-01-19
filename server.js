@@ -1,17 +1,17 @@
-import bodyParser from'body-parser';
-import cookieParser from'cookie-parser';
-import express from'express';
-import session from'express-session';
-import passport from'passport';
-import errorhandler from'errorhandler';
-import path from'path';
-import oauth2 from'./auth/oauth2';
-import config from'./config';
-import site from'./routes/site';
-import token from'./token';
-import user from'./routes/user';
-import AccessToken from'./models/accesstokens';
-import db from'./db/mongoose';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import session from 'express-session';
+import passport from 'passport';
+import errorhandler from 'errorhandler';
+import path from 'path';
+import oauth2 from './auth/oauth2';
+import config from './config';
+import site from './routes/site';
+import token from './routes/token';
+import user from './routes/user';
+import AccessToken from './models/accesstokens';
+import db from './db/mongoose';
 
 // Express configuration
 const app = express();

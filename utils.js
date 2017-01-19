@@ -1,9 +1,4 @@
-'use strict';
-
-const fs   = require('fs');
-const path = require('path');
-const uuid = require('uuid/v4');
-const jwt  = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const KEY = 'secretkey';
 
