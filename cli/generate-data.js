@@ -1,13 +1,13 @@
 const db = require('../db/mongoose');
-const User = require('../models/user');
-const Client = require('../models/client');
-const AccessToken = require('../models/accessToken');
-const RefreshToken = require('../models/refreshToken');
+const User = require('../models/users');
+const Client = require('../models/clients');
+const AccessToken = require('../models/accesstokens');
+const RefreshToken = require('../models/refreshtokens');
 
 User.remove({}, function (err) {
-    var user = new User({
-        username: config.get('test'),
-        password: config.get('test')
+    let user = new User({
+        username: 'test',
+        password: 'test'
     });
 
     user.save(function (err, user) {
@@ -20,7 +20,7 @@ User.remove({}, function (err) {
 });
 
 Client.remove({}, function (err) {
-    var client = new Client({
+    let client = new Client({
         name: 'API V1',
         clientId: 'local',
         clientSecret: 'random'

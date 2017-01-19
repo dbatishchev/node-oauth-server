@@ -1,0 +1,1 @@
+http://localhost:3000/dialog/authorize?redirect_uri=http://localhost:3000&response_type=token&client_id=local

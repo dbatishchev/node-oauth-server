@@ -14,7 +14,7 @@ const site = require('./site');
 const token = require('./token');
 const user = require('./user');
 
-const db = require('./server/db/mongoose');
+const db = require('./db/mongoose');
 
 console.log('Using MemoryStore for the data store');
 console.log('Using MemoryStore for the Session');

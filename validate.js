@@ -1,9 +1,11 @@
 'use strict';
 
 const config  = require('./config');
-const db      = require('./db');
 const utils   = require('./utils');
 const process = require('process');
+
+const User = require('./models/users');
+const Client = require('./models/clients');
 
 /** Validate object to attach all functions to  */
 const validate = Object.create(null);
@@ -95,12 +97,12 @@ validate.token = (token, accessToken) => {
 
     // token is a user token
     if (token.userID != null) {
-        return db.users.find(token.userID)
+        return User.findByUsername(token.userID)
             .then(user => validate.userExists(user))
             .then(user => user);
     }
     // token is a client token
-    return db.clients.find(token.clientID)
+    return Client.findOneBy({ clientId: token.clientID })
         .then(client => validate.clientExists(client))
         .then(client => client);
 };
@@ -162,6 +164,8 @@ validate.isRefreshToken = ({ scope }) => scope != null && scope.indexOf('offline
  */
 validate.generateRefreshToken = ({ userId, clientID, scope }) => {
     const refreshToken = utils.createToken({ sub : userId, exp : config.refreshToken.expiresIn });
+    // todo
+    console.log(token);
     return db.refreshTokens.save(refreshToken, userId, clientID, scope)
         .then(() => refreshToken);
 };
@@ -176,6 +180,8 @@ validate.generateRefreshToken = ({ userId, clientID, scope }) => {
 validate.generateToken = ({ userID, clientID, scope }) => {
     const token      = utils.createToken({ sub : userID, exp : config.token.expiresIn });
     const expiration = config.token.calculateExpirationDate();
+    // todo
+    console.log(token);
     return db.accessTokens.save(token, expiration, userID, clientID, scope)
         .then(() => token);
 };

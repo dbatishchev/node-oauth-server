@@ -1,4 +1,3 @@
-const db = require('./db');
 const validate = require('./validate');
 
 /**
@@ -24,9 +23,11 @@ const validate = require('./validate');
  */
 exports.info = (req, res) =>
     validate.tokenForHttp(req.query.access_token)
+        // todo
         .then(() => db.accessTokens.find(req.query.access_token))
         .then(token => validate.tokenExistsForHttp(token))
         .then(token =>
+            // todo
             db.clients.find(token.clientID)
                 .then(client => validate.clientExistsForHttp(client))
                 .then(client => ({ client, token })))
@@ -62,9 +63,11 @@ exports.info = (req, res) =>
  */
 exports.revoke = (req, res) =>
     validate.tokenForHttp(req.query.token)
+        // todo
         .then(() => db.accessTokens.delete(req.query.token))
         .then((token) => {
             if (token == null) {
+                // todo
                 return db.refreshTokens.delete(req.query.token);
             }
             return token;
