@@ -17,4 +17,8 @@ const Client = new mongoose.Schema({
     }
 });
 
+Client.statics.findByClientId = function findByClientId(clientId, cb) {
+    return this.findOne({ clientId: clientId });
+};
+
 module.exports = mongoose.model('Client', Client);

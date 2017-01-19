@@ -14,6 +14,7 @@ const validate = require('./validate');
 
 const Client = require('./models/clients');
 const RefreshToken = require('./models/refreshtokens');
+const AccessToken = require('./models/accesstokens');
 
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
@@ -49,7 +50,15 @@ server.grant(oauth2orize.grant.token((client, user, ares, done) => {
     const token = utils.createToken({sub: user.id, exp: config.token.expiresIn});
     const expiration = config.token.calculateExpirationDate();
 
-    db.accessTokens.save(token, expiration, user.id, client.id, client.scope)
+    let accessToken = new AccessToken({
+        userId: user.id,
+        clientId: client.id,
+        clientScope: client.scope,
+        token: token,
+        expiration: expiration
+    });
+
+    accessToken.save()
         .then(() => done(null, token, expiresIn))
         .catch(err => done(err));
 }));
@@ -155,7 +164,7 @@ server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, 
 exports.authorization = [
     login.ensureLoggedIn(),
     server.authorization((clientID, redirectURI, scope, done) => {
-        db.clients.findByClientId(clientID)
+        Client.findByClientId(clientID)
             .then((client) => {
                 if (client) {
                     client.scope = scope; // eslint-disable-line no-param-reassign
@@ -172,7 +181,7 @@ exports.authorization = [
         // TODO:  Make a mechanism so that if this isn't a trusted client, the user can record that
         // they have consented but also make a mechanism so that if the user revokes access to any of
         // the clients then they will have to re-consent.
-        Client.findOneBy({ clientId: req.query.client_id })
+        Client.findByClientId(req.query.client_id)
             .then((client) => {
                 if (client != null && client.trustedClient && client.trustedClient === true) {
                     // This is how we short call the decision like the dialog below does
@@ -235,10 +244,10 @@ exports.token = [
 // simple matter of serializing the client's ID, and deserializing by finding
 // the client by ID from the database.
 
-server.serializeClient((client, done) => done(null, client.id));
+server.serializeClient((client, done) => done(null, client.clientId));
 
 server.deserializeClient((id, done) => {
-    db.clients.find(id)
+    Client.findByClientId(id)
         .then(client => done(null, client))
         .catch(err => done(err));
 });

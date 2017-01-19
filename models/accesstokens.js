@@ -9,12 +9,16 @@ const AccessToken = new mongoose.Schema({
         type: String,
         required: true
     },
+    clientScope: {
+        type: String,
+        required: false
+    },
     token: {
         type: String,
         unique: true,
         required: true
     },
-    created: {
+    expiration: {
         type: Date,
         default: Date.now
     }

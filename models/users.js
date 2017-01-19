@@ -46,7 +46,6 @@ User.virtual('password')
 
 User.statics.findByUsername = function findByUsername(username, cb) {
     return this.findOne({ username: username });
-    // todo
 };
 
 module.exports = mongoose.model('User', User);
