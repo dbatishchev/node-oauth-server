@@ -1,23 +1,23 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const RefreshToken = new mongoose.Schema({
     userId: {
         type: String,
-        required: true
+        required: true,
     },
     clientId: {
         type: String,
-        required: true
+        required: true,
     },
     token: {
         type: String,
         unique: true,
-        required: true
+        required: true,
     },
     created: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
 export default mongoose.model('RefreshToken', RefreshToken);

@@ -1,20 +1,19 @@
 'use strict';
 
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const config = require('./config');
-const express = require('express');
-const session = require('express-session');
-const fs = require('fs');
-const oauth2 = require('./oauth2');
-const passport = require('passport');
-const errorhandler = require('errorhandler');
-const path = require('path');
-const site = require('./site');
-const token = require('./token');
-const user = require('./user');
-const db = require('./db/mongoose');
-const AccessToken = require('./models/accesstokens');
+import bodyParser from'body-parser';
+import cookieParser from'cookie-parser';
+import express from'express';
+import session from'express-session';
+import passport from'passport';
+import errorhandler from'errorhandler';
+import path from'path';
+import oauth2 from'./auth/oauth2';
+import config from'./config';
+import site from'./routes/site';
+import token from'./token';
+import user from'./routes/user';
+import AccessToken from'./models/accesstokens';
+import db from'./db/mongoose';
 
 // Express configuration
 const app = express();
@@ -40,7 +39,7 @@ if (app.get('env') === 'development') {
 }
 
 // Passport configuration
-require('./auth');
+require('./auth/auth');
 
 app.get('/', site.index);
 app.get('/login', site.loginForm);

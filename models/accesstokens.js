@@ -1,27 +1,27 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const AccessToken = new mongoose.Schema({
     userId: {
         type: String,
-        required: true
+        required: true,
     },
     clientId: {
         type: String,
-        required: true
+        required: true,
     },
     clientScope: {
         type: String,
-        required: false
+        required: false,
     },
     token: {
         type: String,
         unique: true,
-        required: true
+        required: true,
     },
     expiration: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
 AccessToken.statics.removeExpired = function removeExpired() {

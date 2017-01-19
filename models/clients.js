@@ -1,23 +1,23 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Client = new mongoose.Schema({
     name: {
         type: String,
         unique: true,
-        required: true
+        required: true,
     },
     clientId: {
         type: String,
         unique: true,
-        required: true
+        required: true,
     },
     clientSecret: {
         type: String,
-        required: true
-    }
+        required: true,
+    },
 });
 
-Client.statics.findByClientId = function findByClientId(clientId, cb) {
+Client.statics.findByClientId = function findByClientId(clientId) {
     return this.findOne({ clientId: clientId });
 };
 
