@@ -3,7 +3,7 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config');
-const db = require('./db');
+const models = require('./models');
 const express = require('express');
 const expressSession = require('express-session');
 const fs = require('fs');
@@ -13,6 +13,8 @@ const path = require('path');
 const site = require('./site');
 const token = require('./token');
 const user = require('./user');
+
+const db = require('./server/db/mongoose');
 
 console.log('Using MemoryStore for the data store');
 console.log('Using MemoryStore for the Session');
@@ -81,12 +83,13 @@ app.use((err, req, res, next) => {
     }
 });
 
-// From time to time we need to clean up any expired tokens
-// in the database
-setInterval(() => {
-    db.accessTokens.removeExpired()
-        .catch(err => console.error('Error trying to remove expired tokens:', err.stack));
-}, config.db.timeToCheckExpiredTokens * 1000);
+// todo
+// // From time to time we need to clean up any expired tokens
+// // in the database
+// setInterval(() => {
+//     db.accessTokens.removeExpired()
+//         .catch(err => console.error('Error trying to remove expired tokens:', err.stack));
+// }, config.db.timeToCheckExpiredTokens * 1000);
 
 app.listen(3000, '0.0.0.0', (err) => {
     if (err) {

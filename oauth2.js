@@ -1,5 +1,3 @@
-'use strict';
-
 // Register supported grant types.
 //
 // OAuth 2.0 specifies a framework that allows users to grant client
@@ -7,19 +5,21 @@
 // through a process of the user granting access, and the client exchanging
 // the grant for an access token.
 
-const config      = require('./config');
-const db          = require('./db');
-const login       = require('connect-ensure-login');
+const config = require('./config');
+const login = require('connect-ensure-login');
 const oauth2orize = require('oauth2orize');
-const passport    = require('passport');
-const utils       = require('./utils');
-const validate    = require('./validate');
+const passport = require('passport');
+const utils = require('./utils');
+const validate = require('./validate');
+
+const Client = require('./models/clients');
+const RefreshToken = require('./models/refreshtokens');
 
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
 
 // Configured expiresIn
-const expiresIn = { expires_in : config.token.expiresIn };
+const expiresIn = {expires_in: config.token.expiresIn};
 
 /**
  * Grant authorization codes
@@ -31,7 +31,7 @@ const expiresIn = { expires_in : config.token.expiresIn };
  * which is bound to these values, and will be exchanged for an access token.
  */
 server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
-    const code = utils.createToken({ sub : user.id, exp : config.codeToken.expiresIn });
+    const code = utils.createToken({sub: user.id, exp: config.codeToken.expiresIn});
     db.authorizationCodes.save(code, client.id, redirectURI, user.id, client.scope)
         .then(() => done(null, code))
         .catch(err => done(err));
@@ -46,7 +46,7 @@ server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
  * which is bound to these values.
  */
 server.grant(oauth2orize.grant.token((client, user, ares, done) => {
-    const token      = utils.createToken({ sub : user.id, exp : config.token.expiresIn });
+    const token = utils.createToken({sub: user.id, exp: config.token.expiresIn});
     const expiration = config.token.calculateExpirationDate();
 
     db.accessTokens.save(token, expiration, user.id, client.id, client.scope)
@@ -88,7 +88,7 @@ server.exchange(oauth2orize.exchange.code((client, code, redirectURI, done) => {
 server.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
     db.users.findByUsername(username)
         .then(user => validate.user(user, password))
-        .then(user => validate.generateTokens({ scope, userID: user.id, clientID: client.id }))
+        .then(user => validate.generateTokens({scope, userID: user.id, clientID: client.id}))
         .then((tokens) => {
             if (tokens === false) {
                 return done(null, false);
@@ -112,7 +112,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
  * application issues an access token on behalf of the client who authorized the code.
  */
 server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
-    const token      = utils.createToken({ sub : client.id, exp : config.token.expiresIn });
+    const token = utils.createToken({sub: client.id, exp: config.token.expiresIn});
     const expiration = config.token.calculateExpirationDate();
     // Pass in a null for user id since there is no user when using this grant type
     db.accessTokens.save(token, expiration, null, client.id, scope)
@@ -128,7 +128,7 @@ server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => 
  * token on behalf of the client who authorized the code
  */
 server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, done) => {
-    db.refreshTokens.find(refreshToken)
+    RefreshToken.findOne({token: refreshToken, clientId: client.clientId})
         .then(foundRefreshToken => validate.refreshToken(foundRefreshToken, refreshToken, client))
         .then(foundRefreshToken => validate.generateToken(foundRefreshToken))
         .then(token => done(null, token, null, expiresIn))
@@ -172,19 +172,27 @@ exports.authorization = [
         // TODO:  Make a mechanism so that if this isn't a trusted client, the user can record that
         // they have consented but also make a mechanism so that if the user revokes access to any of
         // the clients then they will have to re-consent.
-        db.clients.findByClientId(req.query.client_id)
+        Client.findOneBy({ clientId: req.query.client_id })
             .then((client) => {
                 if (client != null && client.trustedClient && client.trustedClient === true) {
                     // This is how we short call the decision like the dialog below does
-                    server.decision({ loadTransaction: false }, (serverReq, callback) => {
-                        callback(null, { allow: true });
+                    server.decision({loadTransaction: false}, (serverReq, callback) => {
+                        callback(null, {allow: true});
                     })(req, res, next);
                 } else {
-                    res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client });
+                    res.render('dialog', {
+                        transactionID: req.oauth2.transactionID,
+                        user: req.user,
+                        client: req.oauth2.client
+                    });
                 }
             })
             .catch(() =>
-                res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client }));
+                res.render('dialog', {
+                    transactionID: req.oauth2.transactionID,
+                    user: req.user,
+                    client: req.oauth2.client
+                }));
     }];
 
 /**
@@ -209,7 +217,7 @@ exports.decision = [
  * authenticate when making requests to this endpoint.
  */
 exports.token = [
-    passport.authenticate(['basic', 'oauth2-client-password'], { session: false }),
+    passport.authenticate(['basic', 'oauth2-client-password'], {session: false}),
     server.token(),
     server.errorHandler(),
 ];
