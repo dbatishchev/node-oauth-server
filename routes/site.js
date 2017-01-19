@@ -1,21 +1,4 @@
-'use strict';
-
-const login    = require('connect-ensure-login');
-const passport = require('passport');
-
-/**
- * Render the index.ejs or index-with-code.js depending on if query param has code or not
- * @param   {Object} req - The request
- * @param   {Object} res - The response
- * @returns {undefined}
- */
-exports.index = (req, res) => {
-    if (!req.query.code) {
-        res.render('index');
-    } else {
-        res.render('index-with-code');
-    }
-};
+import passport from 'passport';
 
 /**
  * Render the login.ejs

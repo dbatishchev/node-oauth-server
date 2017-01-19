@@ -1,5 +1,3 @@
-'use strict';
-
 import bodyParser from'body-parser';
 import cookieParser from'cookie-parser';
 import express from'express';
@@ -41,7 +39,6 @@ if (app.get('env') === 'development') {
 // Passport configuration
 require('./auth/auth');
 
-app.get('/', site.index);
 app.get('/login', site.loginForm);
 app.post('/login', site.login);
 app.get('/logout', site.logout);
